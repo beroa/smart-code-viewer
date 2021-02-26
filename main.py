@@ -24,7 +24,7 @@ def getInputs():
 def main():
     # inputs = getInputs()
     # print(inputs)
-    inputs = {'AB': {'description': 'Licensor'}, 'D': {'description': 'Season Code'}, '001': {'description': 'Sequence Number'}, 'A': {'description': 'Version'}, 'B': {'description': 'Version'}, 'C': {'description': 'Version'}, 'D': {'description': 'Version'}}
+    inputs = {'AB': {'description': 'first'}, 'DA': {'description': 'q'}, '001': {'description': 'skip'}, 'A': {'description': 'asd'}, 'B': {'description': 'z'}, 'C': {'description': '15615615615611561656'}, 'D': {'description': 'qwe'}}
 
     with Image(width=2000, height=1000, background=Color('white')) as image:
         with Drawing() as draw:
@@ -43,26 +43,37 @@ def main():
             draw.fill_color = Color('black')
             draw.stroke_color = Color('black')
             draw.font="DejaVu-Sans-Mono"
-            font_width = draw.font_size*.602 # guessed based on DejaVu-Sans-Mono
             bracket_text_displace = 12 # where should the two brackets start from
             bracket_force_y = -5 # how far up into the font the two brackets should start from
             bracket_height = 15 # y height of the bracket
             bracket_shorten_x = 3 # half the x gap between two brackets
 
-            # CALCULATED DO NOT CHANGE
+            # CALCULATED
+            skip_count=0
+            for value in inputs.values():
+                print(value)
+                if value['description'] == 'skip':
+                    skip_count+=1
+
+            print(skip_count)
+            font_width = draw.font_size*.602 # guessed based on DejaVu-Sans-Mono
             bracket_bottom = bracket_text_displace + bracket_height # how far down the bracket bottom line should be drawn
 
-            # for each subcode
             curpos = 0
             draw.font_size = 64
+            # for each subcode
+
+            skips_done = 0
             for i, inp in enumerate(inputs.keys()):
+                remaining_keys = len(inputs)-i-1
+
                 if inputs[inp]['description'] == 'skip':
                     char_count = len(inp)
                     curpos = curpos+char_count
+                    skips_done+=1
                     continue
 
                 char_count = len(inp)
-                remaining_keys = len(inputs)-i-1
                 # if remaining_keys == 0:
                 #     remaining_keys = 1
                 nextpos=curpos+char_count
@@ -82,7 +93,7 @@ def main():
 
                     midpoint = (text_x+curpos*font_width + text_x+nextpos*font_width+bracket_shorten_x*2)//2
                 else:
-                    # last element needs no bracket shorten at the end
+                    # last element needs no bracket_shorten at the end
                     
                     # draw second vertical line
                     draw.line( (text_x+nextpos*font_width, bracket_force_y+text_y+bracket_text_displace),
@@ -96,8 +107,9 @@ def main():
 
 
                 # draw the long vertical line
-                height = draw.font_size*1.75*(remaining_keys+.5)
+                height = draw.font_size*(remaining_keys-(skip_count-skips_done)+.5)*1.75
                 draw.line((midpoint, text_y+bracket_bottom), (midpoint, text_y+bracket_bottom+height))
+
 
                 # draw the horizontal line precending text
                 width = draw.font_size * .85
